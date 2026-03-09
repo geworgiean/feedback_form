@@ -5,6 +5,7 @@ import { submitFeedback } from "../actions/submitFeedback";
 
 export default function FeedbackForm() {
   const { pending } = useFormStatus();
+  
 
   return (
     <form action={submitFeedback} className="space-y-4 p-4 bg-white rounded">

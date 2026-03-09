@@ -1,16 +1,15 @@
 "use server";
 import { supabaseServer } from "../../utils/supabase/server";
 
-
-
-export async function submitFeedback(formData: FormData) {
+export async function submitFeedback(formData: FormData): Promise<void> {
   const name = formData.get("name")?.toString().trim();
   const email = formData.get("email")?.toString().trim();
-  const rating = Number(formData.get("rating"));
+  const ratingValue = formData.get("rating");
+  const rating = ratingValue ? Number(ratingValue) : null;
   const message = formData.get("message")?.toString().trim();
 
   if (!name || !message) {
-    return { error: "Անունը և հաղորդագրությունը պարտադիր են։" };
+    throw new Error("Անունը և հաղորդագրությունը պարտադիր են։");
   }
 
   const { error } = await supabaseServer.from("feedbacks").insert({
@@ -21,8 +20,6 @@ export async function submitFeedback(formData: FormData) {
   });
 
   if (error) {
-    return { error: error.message };
+    throw new Error(error.message);
   }
-
-  return { success: true };
 }
