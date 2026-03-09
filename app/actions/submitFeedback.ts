@@ -1,5 +1,7 @@
 "use server";
-import { supabase } from "../../lib/supabase";
+import { supabaseServer } from "../../utils/supabase/server";
+
+
 
 export async function submitFeedback(formData: FormData) {
   const name = formData.get("name")?.toString().trim();
@@ -11,7 +13,7 @@ export async function submitFeedback(formData: FormData) {
     return { error: "Անունը և հաղորդագրությունը պարտադիր են։" };
   }
 
-  const { error } = await supabase.from("feedbacks").insert({
+  const { error } = await supabaseServer.from("feedbacks").insert({
     name,
     email,
     rating,
