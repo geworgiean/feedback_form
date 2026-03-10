@@ -6,18 +6,34 @@ import { useEffect, useState } from "react";
 
   export default function FeedbackForm() {
   const { pending } = useFormStatus();
+  const [status, setStatus] = useState<string | null | undefined>(null);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
   
+    const formElement = e.currentTarget;
+    const formData = new FormData(formElement);
+    const result = await submitFeedback(formData);
+    
+    if (result.success) {
+      setStatus(result.message ?? null);
+      formElement.reset();
+    } else {
+      setStatus(result.error ?? null);
+    }
+  }
+
   return (
     <form 
-        action={submitFeedback} 
+        onSubmit={handleSubmit} 
         className="space-y-4 p-6 rounded-xl shadow-lg bg-white/80 backdrop-blur-md">
-          <h1 className="text-4xl font-extrabold mb-8 bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent tracking-wide drop-shadow-md text-center">Feedback</h1>
+          <h1 className="text-4xl font-extrabold mb-8 bg-linear-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent tracking-wide drop-shadow-md text-center">Feedback</h1>
       <input 
         type="text" 
         name="name" 
         required 
         placeholder="Name" 
-        className="w-full border font-semibold border-purple-700 p-3 text-black font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-900 transition-transform duration-300 ease-in-out focus:scale-102" 
+        className="w-full border border-purple-700 p-3 text-black font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-900 transition-transform duration-300 ease-in-out focus:scale-102" 
         />
       <input 
         type="email" 
@@ -44,6 +60,7 @@ import { useEffect, useState } from "react";
         className="w-full border font-semibold border-purple-700 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-900 transition-transform duration-300 ease-in-out focus:scale-102" 
       />
       <SubmitButton />
+      {status && <p className="text-xl font-thin bg-linear-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent tracking-wide drop-shadow-md text-center">{status}</p>}
     </form>
   );
 }
@@ -71,3 +88,5 @@ import { useEffect, useState } from "react";
       </button>
     );
   }
+
+  

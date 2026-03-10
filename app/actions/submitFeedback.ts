@@ -1,25 +1,24 @@
 "use server";
 import { supabaseServer } from "../../utils/supabase/server";
 
-export async function submitFeedback(formData: FormData): Promise<void> {
-  const name = formData.get("name")?.toString().trim();
-  const email = formData.get("email")?.toString().trim();
-  const ratingValue = formData.get("rating");
-  const rating = ratingValue ? Number(ratingValue) : null;
-  const message = formData.get("message")?.toString().trim();
+export async function submitFeedback(formData: FormData) {
+  const name = formData.get("name") as string;
+  const email = formData.get("email") as string;
+  const rating = formData.get("rating") as string;
+  const message = formData.get("message") as string;
 
-  if (!name || !message) {
-    throw new Error("Անունը և հաղորդագրությունը պարտադիր են։");
+  if (!name || !email || !message) {
+    return { success: false, error: "All fields are required." };
   }
 
-  const { error } = await supabaseServer.from("feedbacks").insert({
-    name,
-    email,
-    rating,
-    message,
-  });
+  const { error } = await supabaseServer.from("feedbacks").insert([
+    { name, email, rating, message }
+  ]);
 
   if (error) {
-    throw new Error(error.message);
+    console.error("Supabase insert error:", error);
+    return { success: false, error: "Could not send feedback." };
   }
+
+  return { success: true, message: "Your feedback has been sent successfully!" };
 }
